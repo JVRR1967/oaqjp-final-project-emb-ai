@@ -11,14 +11,10 @@ def render_index_page():
 def sent_analyzer():
     text_to_analyze = request.args.get('textToAnalyze')
     
-    # EL TRUCO: Si detecta la frase en español del laboratorio, la manda en inglés a Watson
-    texto_para_watson = text_to_analyze
-    if "divirtiendo" in text_to_analyze.lower() or "divirtiend" in text_to_analyze.lower():
-        texto_para_watson = "I think I am having fun"
-        
-    response = emotion_detector(texto_para_watson)
+    # Se envía el texto real a Watson
+    response = emotion_detector(text_to_analyze)
     
-    # Traducción de la emoción final para que coincida con el PDF
+    # Traducimos solo las etiquetas finales para la interfaz
     traduccion = {
         'anger': 'ira',
         'disgust': 'asco',
@@ -28,7 +24,6 @@ def sent_analyzer():
     }
     emocion_traducida = traduccion.get(response['dominant_emotion'], response['dominant_emotion'])
     
-    # Formato exacto del PDF
     return f"Para la declaración dada, la respuesta del sistema es 'ira': {response['anger']}, 'asco': {response['disgust']}, 'miedo': {response['fear']}, 'alegría': {response['joy']} y 'tristeza': {response['sadness']}. La emoción dominante es {emocion_traducida}."
 
 if __name__ == "__main__":
